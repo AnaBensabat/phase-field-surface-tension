@@ -34,8 +34,8 @@ public:
   double alpha;        //volume coefficient
   double eta;          //adhesion coefficient
   double gamma;        //repulsion term
-  double kappa;
-  double chi;
+  double kappa;        //surface-tension-ratio
+  double chi;          //non-local
 };
 
 Cell::Cell (int dimX, int dimY, int dimZ, vector<double> center, vector<double> radius, vector<double> center_nucleus, vector<double> radius_nucleus, bool tan, bool bomboca) {
@@ -366,7 +366,7 @@ void evolve(Cell &cell, matrix environment, double velocity, double velocity_nuc
   for(int i=0;i<dimX;i++){
     for(int j=0;j<dimY;j++){
       for(int k=0;k<dimZ;k++){
-	h_environment_g[i][j][k] = environment[i][j][k]*environment[i][j][k]*(3-2*environment[i][j][k]); //interaction cell-environment
+	h_environment_g[i][j][k] = environment[i][j][k]*environment[i][j][k]*(3-2*environment[i][j][k]);
       }
     }
   }
@@ -404,7 +404,7 @@ void evolve(Cell &cell, matrix environment, double velocity, double velocity_nuc
     for(int i=0;i<dimX;i++){
       for(int j=0;j<dimY;j++){
 	for(int k=0;k<dimZ;k++){
-	  h_cell_g[i][j][k] = (1-cell.grid[i][j][k])*(1-cell.grid[i][j][k])*(3-2*(1-cell.grid[i][j][k])); //repulsion of the nucleus at the border
+	  h_cell_g[i][j][k] = (1-cell.grid[i][j][k])*(1-cell.grid[i][j][k])*(3-2*(1-cell.grid[i][j][k])); 
 	  h_nucleus_g[i][j][k] = cell.grid_nucleus[i][j][k]*cell.grid_nucleus[i][j][k]*(3-2*cell.grid_nucleus[i][j][k]);
 	}
       }
@@ -418,8 +418,8 @@ void evolve(Cell &cell, matrix environment, double velocity, double velocity_nuc
 	  //double h_cell = h_cell_g[i][j][k];
 	  //double h_nucleus = h_nucleus_g[i][j][k];
 	  
-	  double h_environment = environment[i][j][k]*environment[i][j][k]*(3-2*environment[i][j][k]); //interaction cell-environment
-	  double h_cell = (1-cell.grid[i][j][k])*(1-cell.grid[i][j][k])*(3-2*(1-cell.grid[i][j][k])); //repulsion of the nucleus at the border
+	  double h_environment = environment[i][j][k]*environment[i][j][k]*(3-2*environment[i][j][k]); 
+	  double h_cell = (1-cell.grid[i][j][k])*(1-cell.grid[i][j][k])*(3-2*(1-cell.grid[i][j][k])); 
 	  double h_nucleus = cell.grid_nucleus[i][j][k]*cell.grid_nucleus[i][j][k]*(3-2*cell.grid_nucleus[i][j][k]);
 
 	  grid_cell2[i][j][k] = cell.grid[i][j][k] + dt*(
@@ -444,18 +444,16 @@ void evolve(Cell &cell, matrix environment, double velocity, double velocity_nuc
 		int zp = ((k+dz)%dimZ+dimZ)%dimZ;
 
 	        double dot_prod = dot_grad(cell.grid, xp, yp, zp, i, j, k);
-		if (dot_prod<0) cout<<"opposite\n";
+		//if (dot_prod<0) cout<<"opposite\n";
 		if (norma<=range*range && dot_prod<0) {
 		  temp += exp(-norma/delta)*cell.grid[i][j][k]*(1-cell.grid[i][j][k])*dot_prod;
-		  cout<<"Adding "<<temp<<endl;
+		  //cout<<"Adding "<<temp<<endl;
 		}
 	      }
 	    }
 	  }
 	  
 	  grid_cell2[i][j][k] -= cell.chi*dt*temp;
-	  
-
 
 	  grid_nucleus2[i][j][k] = cell.grid_nucleus[i][j][k] + dt*(
 								    -velocity_nuc*(cell.grid[i][j][((k+1)%dimZ+dimZ)%dimZ] - cell.grid[i][j][((k-1)%dimZ+dimZ)%dimZ])*0.5 + //advective term
