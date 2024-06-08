@@ -182,7 +182,7 @@ void saveGridToVTI(string filename, matrix &grid) {
   int dimZ = grid[0][0].size();
   FILE* file = fopen(filename.c_str(), "w");
   if (file == NULL) {
-    printf("Error opening file %s\n", filename);
+    cout<<("Error opening file ")<<filename<<'\n';
     return;
   }
  
