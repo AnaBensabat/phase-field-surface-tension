@@ -373,7 +373,6 @@ void evolve(Cell &cell, matrix environment, double velocity, double velocity_nuc
   
   double eps = 1e-3;
   double vtarget_cell = vol(cell.grid, eps);
-  //double vtarget_cell = vol_citoplasm(cell.grid, cell.grid_nucleus, eps);
 
   double cur_vol_cell = vtarget_cell;
   double vtarget_nucleus = vol(cell.grid_nucleus, eps);
@@ -447,11 +446,12 @@ void evolve(Cell &cell, matrix environment, double velocity, double velocity_nuc
 		//if (dot_prod<0) cout<<"opposite\n";
 		if (norma<=range*range && dot_prod<0) {
 		  temp += exp(-norma/delta)*cell.grid[i][j][k]*(1-cell.grid[i][j][k])*dot_prod;
-		  //cout<<"Adding "<<temp<<endl;
 		}
 	      }
 	    }
 	  }
+
+	  //if (abs(temp)>1e-3) cout<<"adding"<<-cell.chi*dt*temp<<'\n';
 	  
 	  grid_cell2[i][j][k] -= cell.chi*dt*temp;
 
@@ -472,7 +472,6 @@ void evolve(Cell &cell, matrix environment, double velocity, double velocity_nuc
     if (step%Nframes==0) {
       cout<<"On step "<<step<<"/"<<N<<endl;
       saveGridToVTI(dir+"cell_"+id,cell.grid);
-      //saveGridToVTI(dir+"environment_"+id,environment);
       saveGridToVTI(dir+"nucleus_"+id,cell.grid_nucleus);
     }
     swap(cell.grid, grid_cell2);

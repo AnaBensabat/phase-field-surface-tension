@@ -85,11 +85,11 @@ void run_simulation(string pwd, double eta, double kappa){
     time = 2000;
 
     cout<<"----STARTING TIME EVOLUTION----"<<endl;
-    evolve(mycell, mygrooves.grid, velocity, velocity_nuc,  dt, time, pwd, 500);
+    evolve(mycell, mygrooves.grid, velocity, velocity_nuc,  dt, time, pwd, 50000);
     
-    s1 = "cell_F_eta="+to_string(mycell.eta)+"_k="+to_string(mycell.kappa)+"_eps="+to_string(mycell.epsilon)+".vti";
-    s2 = "nucleus_F_eta="+to_string(mycell.eta)+"_k="+to_string(mycell.kappa)+"_eps="+to_string(mycell.epsilon)+".vti";
-    s3 = "environment_F_eta="+to_string(mycell.eta)+"_k="+to_string(mycell.kappa)+"_eps="+to_string(mycell.epsilon)+".vti";
+    s1 = "cell_F_eta="+to_string(mycell.eta)+"_k="+to_string(mycell.kappa)+".vti";
+    s2 = "nucleus_F_eta="+to_string(mycell.eta)+"_k="+to_string(mycell.kappa)+".vti";
+    s3 = "environment_F_eta="+to_string(mycell.eta)+"_k="+to_string(mycell.kappa)+".vti";
     saveGridToVTI(pwd+s1,mycell.grid);
     saveGridToVTI(pwd+s2,mycell.grid_nucleus);
     saveGridToVTI(pwd+s3,mygrooves.grid);
@@ -110,8 +110,8 @@ int main(){
   filesystem::create_directory("output");
   pwd+="/output/";
   
-  vector<double> etas = {0.1, 0.5, 1, 1.5};//{0.1, 0.3, 0.5, 0.7, 0.9, 1.1, 1.3, 1.5, 1.7, 1.9};
-  vector<double> kappas = {0.1, 0.5, 1, 15, 2};//{0.1, 0.5, 1, 1.5, 2, 2.5, 3};
+  vector<double> etas = {0.05      , 0.21111111, 0.37222222, 0.53333333, 0.69444444, 0.85555556, 1.01666667, 1.17777778, 1.33888889, 1.5       };//{0.1, 0.3, 0.5, 0.7, 0.9, 1.1, 1.3, 1.5, 1.7, 1.9};
+  vector<double> kappas = {0.001, 0.0046, 0.0215, 0.1, 0.464, 2.15, 10, 46.1, 215.4, 1000};//{0.1, 0.5, 1, 1.5, 2, 2.5, 3};
 
   for(auto eta:etas){
     for(auto kappa:kappas){
